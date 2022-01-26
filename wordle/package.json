@@ -1,0 +1,14 @@
+{
+    "name": "@davezuko/wordle",
+    "version": "0.0.0",
+    "main": "./src/main.ts",
+    "repository": "https://github.com/davezuko/playground",
+    "author": "David Zukowski <david@zuko.me>",
+    "license": "UNLICENSED",
+    "type": "module",
+    "scripts": {
+        "build": "node ./scripts/build.js",
+        "serve": "node ./scripts/serve.js",
+        "start": "node ./scripts/start.js"
+    }
+}

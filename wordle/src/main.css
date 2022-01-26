@@ -1,0 +1,108 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --keyboard-gap: 0.25rem;
+}
+
+[data-theme="light"] {
+    --correct-bg: #6aaa64;
+    --present-bg: #c9b458;
+    --absent-bg: #787c7e;
+
+    --letter-bg: #fff;
+    --letter-border: rgb(175, 175, 175);
+    --keyboard-key-fg: #000;
+    --keyboard-key-bg: #d3d6da;
+}
+
+.game {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 2rem;
+    max-width: 800px;
+}
+
+header {
+    text-align: center;
+}
+
+.guess-list {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    list-style: none;
+    margin: 2rem auto;
+    padding: 0;
+    gap: 0.35rem;
+}
+
+.guess-row {
+    display: flex;
+    gap: 0.35rem;
+    height: 4rem;
+}
+
+.guess-cell {
+    /* flex: 1; */
+    /* aspect-ratio: 1; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border: 1px solid var(--letter-border);
+    font-size: 2rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--keyboard-gap);
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--keyboard-gap);
+}
+
+.keyboard-key {
+    padding: 0.75rem;
+    color: var(--keyboard-key-fg);
+    background: var(--keyboard-key-bg);
+    border-radius: 4px;
+    outline: none;
+    border: none;
+    text-transform: uppercase;
+}
+
+[data-state="correct"] {
+    color: #fff;
+    background: var(--correct-bg);
+}
+
+[data-state="present"] {
+    color: #fff;
+    background: var(--present-bg);
+}
+
+[data-state="absent"] {
+    color: #fff;
+    background: var(--absent-bg);
+}
