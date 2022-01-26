@@ -7,22 +7,34 @@
 html,
 body {
     margin: 0;
-    padding: 0;
+    color: var(--site-fg);
+    background: var(--site-bg);
 }
 
 :root {
     --keyboard-gap: 0.25rem;
 }
 
-[data-theme="light"] {
+html[data-theme="light"] {
+    --cell-bg: #fff;
+    --cell-border: rgb(175, 175, 175);
+    --keyboard-key-fg: #000;
+    --keyboard-key-bg: #d3d6da;
     --correct-bg: #6aaa64;
     --present-bg: #c9b458;
     --absent-bg: #787c7e;
+}
 
-    --letter-bg: #fff;
-    --letter-border: rgb(175, 175, 175);
+html[data-theme="dark"] {
+    --site-bg: rgb(30, 30, 30);
+    --site-fg: rgb(245, 245, 245);
+    --cell-bg: #fff;
+    --cell-border: rgb(175, 175, 175);
     --keyboard-key-fg: #000;
     --keyboard-key-bg: #d3d6da;
+    --correct-bg: #6aaa64;
+    --present-bg: #c9b458;
+    --absent-bg: #787c7e;
 }
 
 .game {
@@ -64,7 +76,7 @@ header {
     justify-content: center;
     width: 4rem;
     height: 4rem;
-    border: 1px solid var(--letter-border);
+    border: 1px solid var(--cell-border);
     font-size: 2rem;
     font-weight: 500;
     text-transform: uppercase;

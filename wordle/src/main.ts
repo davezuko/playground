@@ -1,40 +1,53 @@
 const SOLUTION_LENGTH = 5
 const MAX_GUESSES = 6
 
-type LetterState = "unknown" | "absent" | "present" | "correct"
+let _currentTheme: string
 
 interface GameState {
     input: {row: number; word: string}
-    submittedInput: {row: number; word: string} | null
     answer: string
     guesses: string[]
     letters: Map<string, LetterState>
+    lastTick: Partial<{
+        input: {row: number; word: string}
+    }>
 }
 
-let main = async () => {
+type LetterState = "unknown" | "absent" | "present" | "correct"
+
+let main = () => {
     let gameState = createGameState()
     let ui = createUI()
     document.addEventListener("keydown", (e) => {
         handleKeyboardEvent(gameState, e)
         updateUI(gameState, ui)
-        if (gameState.submittedInput) {
-            gameState.submittedInput = null
-        }
+        gameState.lastTick = {}
     })
 }
 
 let createGameState = (): GameState => {
     return {
         input: {row: 0, word: ""},
-        submittedInput: null,
         answer: "train",
         guesses: new Array(MAX_GUESSES).fill(""),
         letters: new Map(),
+        lastTick: {},
     }
 }
 
 let handleKeyboardEvent = (gameState: GameState, e: KeyboardEvent) => {
-    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+    // shortcuts
+    if (e.ctrlKey) {
+        switch (e.key) {
+            case " ":
+                applyTheme(_currentTheme === "light" ? "dark" : "light")
+                break
+        }
+        return
+    }
+
+    // ignore all other key presses with modifiers
+    if (e.metaKey || e.shiftKey) {
         return
     }
 
@@ -59,12 +72,21 @@ let handleKeyboardEvent = (gameState: GameState, e: KeyboardEvent) => {
     }
 }
 
+let applyTheme = (theme: string) => {
+    _currentTheme = theme
+    document.documentElement.setAttribute("data-theme", theme)
+    try {
+        localStorage.setItem("theme", theme)
+    } catch (e) {}
+}
+
 let submitGuess = (word: string, gameState: GameState) => {
     if (word.length !== SOLUTION_LENGTH) {
         return
     }
+
     gameState.guesses[gameState.input.row] = word
-    gameState.submittedInput = {...gameState.input}
+    gameState.lastTick.input = {...gameState.input}
     gameState.input.row++
     gameState.input.word = ""
 
@@ -98,18 +120,23 @@ interface UI {
     keyboard: UIKeyboard
 }
 let createUI = (): UI => {
+    let theme = "light"
+    try {
+        let t = localStorage.getItem("theme")!
+        if (t === "light" || t === "dark") {
+            theme = t
+        }
+    } catch (e) {}
+    applyTheme(theme)
+
     let root = document.createElement("div")
     root.className = "game"
-    root.setAttribute("data-theme", "light")
 
     let guesses = createUIGuessList(root)
     let keyboard = createUIKeyboard(root)
 
     document.body.append(root)
-    return {
-        guesses,
-        keyboard,
-    }
+    return {guesses, keyboard}
 }
 
 let updateUI = (gameState: GameState, ui: UI) => {
@@ -122,12 +149,10 @@ let updateUI = (gameState: GameState, ui: UI) => {
     }
 
     // reveal matching letters in last submission
-    if (gameState.submittedInput) {
-        let row = ui.guesses.rows[gameState.submittedInput.row]
-        let states = getLetterStates(
-            gameState.answer,
-            gameState.submittedInput.word,
-        )
+    let {input} = gameState.lastTick
+    if (input) {
+        let row = ui.guesses.rows[input.row]
+        let states = getLetterStates(gameState.answer, input.word)
         for (let i = 0; i < states.length; i++) {
             let cell = row.cells[i]
             cell.setAttribute("data-state", states[i])
@@ -196,9 +221,7 @@ interface UIKeyboard {
     keys: HTMLElement[]
 }
 let createUIKeyboard = (container: HTMLElement) => {
-    let self: UIKeyboard = {
-        keys: [],
-    }
+    let self: UIKeyboard = {keys: []}
     let root = document.createElement("div")
     root.className = "keyboard"
     let rows = [
